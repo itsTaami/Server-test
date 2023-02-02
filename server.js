@@ -18,14 +18,14 @@ server.get("/", (req, res) => {
 server.post("/signup", (req, res) => {
   //post n shineer huselt bichih
 
-  const { name, role } = req.body;
+  const { name, role = "user", email, password } = req.body;
   const date = fs.readFileSync("users.json", "utf-8");
   const parseData = JSON.parse(data);
   const id = uuidv4();
   const salted = bcrypt.genSaltSync(10);
   const hashedPassword = bcrypt.hashSync(password, salted);
   console.log(hashedPassword);
-  console.log("data", data);
+
   const newUser = {
     id,
     name,
@@ -36,22 +36,6 @@ server.post("/signup", (req, res) => {
   parseData.users.push(newUser);
   fs.writeFileSync("users.json", JSON.stringify(parseData));
   res.status(201).json({ message: "new user added successfully" });
-  // fs.readFile("users.json", "utf-8", (err, data) => {
-  //   if (err) {
-  //     console.log("Error:File loading!!!");
-  //     return;
-  //   }
-  //   console.log(data);
-  //   const parseData = JSON.parse(data);
-  //   const newUser = { name, role, id: parseData.users.length };
-  //   parseData.users.push(newUser);
-  //   fs.writeFile("users.json", JSON.stringify(parseData), (err) => {
-  //     if (err) {
-  //       res.status(400).json({ message: "Error" });
-  //     }
-  //     res.status(201).json({ message: "New user created" });
-  //   });
-  // });
 });
 server.post("/signin", (req, res) => {
   const { id, email, password } = req.body;
