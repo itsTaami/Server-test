@@ -96,6 +96,40 @@ server.delete("/users/:id", (req, res) => {
     .json({ message: `${id} тай хэрэглэгч амжилттай устгагдлаа.` });
 });
 
+//User END
+
+//Category START
+
+server.post("/categories", (req, res) => {
+  try {
+    const content = fs.readFileSync("categories.json", "utf-8");
+    const data = JSON.parse(content);
+    const newData = { ...req.body };
+    data.categories.push(newData);
+    fs.writeFileSync("categories.json", JSON.stringify(data));
+    res
+      .status(201)
+      .json({ message: "Category added successfully ", data: newData });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+
+  res.json();
+});
+
+server.get("/categories", (req, res) => {
+  try {
+    const categoriesData = fs.readFileSync("categories.json", "utf-8");
+    const data = JSON.parse(categoriesData);
+    res.status(200).json({ message: "success", data });
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
+  }
+  res.json();
+});
+
+//Category END
+
 server.listen(port, () => {
   console.log(`Server aslaa ${port}`);
 });
