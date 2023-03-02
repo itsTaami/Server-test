@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const mysql = require("mysql2");
 // const fs = require("fs");
 // const { json } = require("express");
 // const { v4: uuidv4 } = require("uuid");
@@ -8,6 +9,13 @@ const cors = require("cors");
 
 const usersRoute = require("./routes/users");
 const categoriesRoute = require("./routes/categories");
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  database: "azure_db",
+  password: "",
+  port: 3306,
+});
 
 const port = 8000;
 
@@ -18,9 +26,91 @@ server.use(express.json());
 server.use("/users", usersRoute);
 server.use("/categories", categoriesRoute);
 
-// server.get("/", (req, res) => {
-//   res.status(200).json({ message: "Hello express server" }); // GET iruul json niig butsaana. Browser luu zovhon GET huselt yvuulna
+// server.put("/users/:id", (req, res) => {
+//   const { id } = req.params;
+//   const { name } = req.body;
+//   const data = fs.readFileSync("user.json", "utf-8");
+//   const parseData = JSON.parse(data);
+//   const findIndex = parseData.users.findIndex((el) => el.id === id);
+//   parseData.users[findIndex].name = name;
+//   fs.writeFileSync("user.json", JSON.stringify(parseData));
+//   res
+//     .status(201)
+//     .json({ message: "Шинэ хэрэглэгчийн өгөгдөл амжилттай солигдлоо." });
 // });
+
+server.get("/:id", async (req, res) => {
+  const { id } = req.params;
+  connection.query(
+    `SELECT * FROM azure_user WHERE aid=${id}`,
+    (err, result, fields) => {
+      if (err) {
+        res.status(400).json({ message: err.message });
+        return;
+      }
+      res.status(200).json({ message: "Success", data: result });
+    }
+  );
+  // res.status(200).json({ message: "Hello server" }); // GET iruul json niig butsaana. Browser luu zovhon GET huselt yvuulna
+});
+server.get("/", async (req, res) => {
+  connection.query(`SELECT * FROM azure_user `, (err, result, fields) => {
+    if (err) {
+      res.status(400).json({ message: err.message });
+      return;
+    }
+    res.status(200).json({ message: "Success", data: result });
+  });
+  // res.status(200).json({ message: "Hello server" }); // GET iruul json niig butsaana. Browser luu zovhon GET huselt yvuulna
+});
+
+server.put("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body.name;
+
+  connection.query(
+    `UPDATE azure_user SET Name=${name} WHERE aid=${id}`,
+    (err, result, fields) => {
+      if (err) {
+        res.status(400).json({ message: err.message });
+        return;
+      }
+      res.status(200).json({ message: "Success", data: result });
+    }
+  );
+});
+
+server.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body.name;
+
+  connection.query(
+    `DELETE FROM azure_user WHERE aid=${id}`,
+    (err, result, fields) => {
+      if (err) {
+        res.status(400).json({ message: err.message });
+        return;
+      }
+      res.status(200).json({ message: "Success", data: result });
+    }
+  );
+});
+
+server.post("/", async (req, res) => {
+  const { id } = req.params;
+  const { name, ovog } = req.body.name;
+
+  connection.query(
+    `INSERT INTO azure_user(aid,Name,Ovog) VALUE ('${id}','${name}','${ovog}')`,
+    (err, result, fields) => {
+      if (err) {
+        res.status(400).json({ message: err.message });
+        return;
+      }
+      res.status(200).json({ message: "Success", data: result });
+    }
+  );
+});
 
 // server.post("/signup", (req, res) => {
 //   //post n shineer huselt bichih
