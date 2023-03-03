@@ -67,9 +67,12 @@ server.get("/", async (req, res) => {
 server.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { name } = req.body.name;
+  const keys = Object.keys(body);
+  const map = keys.map((key) => `${key}="${body[key]}"`);
+  const join = map.join();
 
   connection.query(
-    `UPDATE azure_user SET Name=${name} WHERE aid=${id}`,
+    `UPDATE azure_user SET Name=${join} WHERE aid=${id}`,
     (err, result, fields) => {
       if (err) {
         res.status(400).json({ message: err.message });
