@@ -6,7 +6,7 @@ const {
   putCategoriesById,
   deleteCategoriesById,
   getCategoriesById,
-} = require("./controllers/categories");
+} = require("../controllers/categories");
 
 const router = Router();
 

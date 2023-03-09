@@ -9,13 +9,14 @@ const mysql = require("mysql2");
 
 const usersRoute = require("./routes/users");
 const categoriesRoute = require("./routes/categories");
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  database: "azure_db",
-  password: "",
-  port: 3306,
-});
+const connection = require("./config/db");
+// const connection = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   database: "azure_db",
+//   password: "",
+//   port: 3306,
+// });
 
 const port = 8000;
 

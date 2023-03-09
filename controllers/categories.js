@@ -1,12 +1,14 @@
 const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
+const filePath = "./data/categories.json";
 
 const postCategories = (req, res) => {
   try {
-    const content = fs.readFileSync("categories.json", "utf-8");
+    const content = fs.readFileSync(filePath, "utf-8");
     const data = JSON.parse(content);
     const newData = { ...req.body };
     data.categories.push(newData);
-    fs.writeFileSync("categories.json", JSON.stringify(data));
+    fs.writeFileSync(filePath, JSON.stringify(data));
     res
       .status(201)
       .json({ message: "Category added successfully ", data: newData });

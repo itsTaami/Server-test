@@ -1,5 +1,18 @@
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
+const connection = require("../config/db");
+const filePath = "../../data/users.json";
+
+const getAllUsers = (req, res) => {
+  fs.readFile(filePath, "utf-8", (err, data) => {
+    if (err) {
+      console.log("Файл уншихад алдаа гарлаа. !!!");
+      return;
+    }
+    const parsedData = JSON.parse(data);
+    res.status(201).json({ users: parsedData.datas });
+  });
+};
 const getUsers = (req, res) => {
   const users = fs.readFile("./data/users.json", "utf-8", (err, data) => {
     if (err) {
@@ -9,6 +22,27 @@ const getUsers = (req, res) => {
     const parseData = JSON.parse(data);
     res.status(201).json({ users: parseData.users });
   });
+};
+const createUser = (req, res) => {
+  const { name, email, password, phoneNumber } = req.body;
+  const salted = bcrypt.genSaltSync(10);
+  const hashedPassword = bcrypt.hashSync(password, salted);
+
+  const query =
+    "INSERT INTO user (id, name,email,password, phone_number, profileImg) VALUES(null,  ?, ?, ?, ?, ?)";
+  connection.query(
+    query,
+    [name, email, hashedPassword, phoneNumber, "url"],
+    (err, result) => {
+      if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+      res
+        .status(201)
+        .json({ message: "Шинэ хэрэглэгч амжилттай бүртгэгдлээ." });
+    }
+  );
 };
 
 const getUserById = (req, res) => {
@@ -43,4 +77,11 @@ const deleteUserById = (req, res) => {
     .json({ message: `${id} тай хэрэглэгч амжилттай устгагдлаа.` });
 };
 
-module.exports = { getUsers, getUserById, putUserById, deleteUserById };
+module.exports = {
+  getUsers,
+  getUserById,
+  putUserById,
+  deleteUserById,
+  getAllUsers,
+  createUser,
+};
