@@ -1,15 +1,14 @@
-const express = require("express");
-const cors = require("cors");
-const mysql = require("mysql2");
 // const fs = require("fs");
 // const { json } = require("express");
 // const { v4: uuidv4 } = require("uuid");
 // const bcrypt = require("bcrypt");
 // const { json } = require("express");
+const express = require("express");
+const cors = require("cors");
 
 const usersRoute = require("./routes/users");
 const categoriesRoute = require("./routes/categories");
-const connection = require("./config/db");
+// const connection = require("./config/db");
 // const connection = mysql.createConnection({
 //   host: "localhost",
 //   user: "root",
@@ -18,15 +17,17 @@ const connection = require("./config/db");
 //   port: 3306,
 // });
 
-const port = 8000;
+const port = 8001;
 
 const server = express();
 server.use(cors());
 server.use(express.json());
 
-server.use("/users", usersRoute);
-server.use("/categories", categoriesRoute);
-
+server.use("/api/users", usersRoute);
+server.use("/api/categories", categoriesRoute);
+server.get("/", (req, res) => {
+  res.send("Hello World");
+});
 // server.put("/users/:id", (req, res) => {
 //   const { id } = req.params;
 //   const { name } = req.body;
@@ -43,7 +44,7 @@ server.use("/categories", categoriesRoute);
 server.get("/:id", async (req, res) => {
   const { id } = req.params;
   connection.query(
-    `SELECT * FROM azure_user WHERE aid=${id}`,
+    `SELECT * FROM user WHERE aid=${id}`,
     (err, result, fields) => {
       if (err) {
         res.status(400).json({ message: err.message });
@@ -55,7 +56,7 @@ server.get("/:id", async (req, res) => {
   // res.status(200).json({ message: "Hello server" }); // GET iruul json niig butsaana. Browser luu zovhon GET huselt yvuulna
 });
 server.get("/", async (req, res) => {
-  connection.query(`SELECT * FROM azure_user `, (err, result, fields) => {
+  connection.query(`SELECT * FROM users `, (err, result, fields) => {
     if (err) {
       res.status(400).json({ message: err.message });
       return;
@@ -67,13 +68,13 @@ server.get("/", async (req, res) => {
 
 server.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { name } = req.body.name;
+  const body = req.body;
   const keys = Object.keys(body);
   const map = keys.map((key) => `${key}="${body[key]}"`);
   const join = map.join();
 
   connection.query(
-    `UPDATE azure_user SET Name=${join} WHERE aid=${id}`,
+    `UPDATE user SET Name=${join} WHERE aid=${id}`,
     (err, result, fields) => {
       if (err) {
         res.status(400).json({ message: err.message });
@@ -84,37 +85,34 @@ server.put("/:id", async (req, res) => {
   );
 });
 
-server.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body.name;
+// server.delete("/:id", async (req, res) => {
+//   const { id } = req.params;
+//   const { name } = req.body.name;
 
-  connection.query(
-    `DELETE FROM azure_user WHERE aid=${id}`,
-    (err, result, fields) => {
-      if (err) {
-        res.status(400).json({ message: err.message });
-        return;
-      }
-      res.status(200).json({ message: "Success", data: result });
-    }
-  );
-});
+//   connection.query(`DELETE FROM user WHERE id=${id}`, (err, result, fields) => {
+//     if (err) {
+//       res.status(400).json({ message: err.message });
+//       return;
+//     }
+//     res.status(200).json({ message: "Success", data: result });
+//   });
+// });
 
-server.post("/", async (req, res) => {
-  const { id } = req.params;
-  const { name, ovog } = req.body.name;
+// server.post("/", async (req, res) => {
+//   const { id } = req.params;
+//   const { name, email, password, phoneNumber } = req.body;
 
-  connection.query(
-    `INSERT INTO azure_user(aid,Name,Ovog) VALUE ('${id}','${name}','${ovog}')`,
-    (err, result, fields) => {
-      if (err) {
-        res.status(400).json({ message: err.message });
-        return;
-      }
-      res.status(200).json({ message: "Success", data: result });
-    }
-  );
-});
+//   connection.query(
+//     `INSERT INTO user VALUE ('${id}','${name}','${email}','${password},'${phoneNumber}')`,
+//     (err, result, fields) => {
+//       if (err) {
+//         res.status(400).json({ message: err.message });
+//         return;
+//       }
+//       res.status(200).json({ message: "Success", data: result });
+//     }
+//   );
+// });
 
 // server.post("/signup", (req, res) => {
 //   //post n shineer huselt bichih

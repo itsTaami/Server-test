@@ -5,8 +5,9 @@ const bcrypt = require("bcrypt");
 const {
   getUsers,
   getUserById,
-  putUserById,
+  updateUser,
   deleteUserById,
+  createUser,
 } = require("../controllers/users");
 
 const router = Router();
@@ -14,10 +15,10 @@ const router = Router();
 // Start Users
 
 router.get("/", getUsers);
-
 router.get("/:id", getUserById);
-router.put("/:id", putUserById);
+router.put("/:id", updateUser);
 router.delete("/:id", deleteUserById);
+router.post("/", createUser);
 
 // End Users
 
